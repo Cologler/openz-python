@@ -6,6 +6,7 @@ authors = ["Cologler <skyoflw@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "openz"}]
+homepage = "https://github.com/Cologler/openz-python"
 
 [tool.poetry.dependencies]
 python = "^3.8"
