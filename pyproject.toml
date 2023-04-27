@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "<new-python-package>"
+version = "0.0.0"
+description = ""
+authors = ["Cologler <skyoflw@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "<new-python-package>"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.263"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[build-system]
+requires = ["poetry-core", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
