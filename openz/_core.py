@@ -100,7 +100,9 @@ def try_rollback(path: os.PathLike, *,
     ):
 
     path_dict = create_path_dict(path, False)
-    backup_path = backup_format.format_map(path_dict)
+
+    backup_path = Path(path).parent / backup_format.format_map(path_dict)
+
     if os.path.isfile(backup_path):
         os.replace(backup_path, path)
         return True
