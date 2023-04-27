@@ -44,22 +44,26 @@ def test_write(
     data_str = nanoid.generate(size=10)
     data = data_str if text_mode else data_str.encode('utf-8')
 
-    try:
-        with open_for_write(f,
-                text_mode=text_mode,
-                overwrite=False,
-                with_atomicwrite=atomicwrite,
-                with_lockfile=lockfile,
-                with_exclusive=exclusive,
-                with_backup=backup) as fp:
-            fp.write(data)
+    for step in range(2):
+        try:
+            with open_for_write(f,
+                    text_mode=text_mode,
+                    overwrite=False,
+                    with_atomicwrite=atomicwrite,
+                    with_lockfile=lockfile,
+                    with_exclusive=exclusive,
+                    with_backup=backup) as fp:
+                fp.write(data)
 
-        assert not should_raises_error
-    except ValueError:
-        assert should_raises_error
-        return
+            assert not should_raises_error
+            assert step == 0
+        except ValueError:
+            assert should_raises_error
+            return
+        except FileExistsError:
+            assert step > 0
 
-    assert content() == data
+        assert content() == data
 
 
 @pytest.mark.parametrize("backup", [True, False])
@@ -113,11 +117,13 @@ def test_overwrite(
 @pytest.mark.parametrize("lockfile", [True, False])
 @pytest.mark.parametrize("atomicwrite", [True, False])
 @pytest.mark.parametrize("text_mode", [True, False])
+@pytest.mark.parametrize("backup_for_fault", [True, False])
 def test_backup(
         text_mode: bool,
         atomicwrite: bool,
         lockfile: bool,
-        exclusive: bool
+        exclusive: bool,
+        backup_for_fault: bool,
     ):
 
     should_raises_error = atomicwrite and exclusive
@@ -143,7 +149,9 @@ def test_backup(
                     with_atomicwrite=atomicwrite,
                     with_lockfile=lockfile,
                     with_exclusive=exclusive,
-                    with_backup=True) as fp:
+                    with_backup=True,
+                    backup_for_fault=backup_for_fault,
+                    ) as fp:
                 fp.write(data)
 
             assert not should_raises_error
@@ -153,8 +161,11 @@ def test_backup(
 
         assert content() == data
 
-        assert len(data_str) in sizes
+        if backup_for_fault:
+            assert not try_rollback(f)
+        else:
+            assert len(data_str) in sizes
 
-        if len(data_str) in sizes[1:]:
-            assert try_rollback(f)
-            assert content() == data_strs[0] if text_mode else data_strs[0].encode('utf-8')
+            if len(data_str) in sizes[1:]:
+                assert try_rollback(f)
+                assert content() == data_strs[0] if text_mode else data_strs[0].encode('utf-8')

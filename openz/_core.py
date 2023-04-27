@@ -5,7 +5,7 @@
 # 
 # ----------
 
-from typing import Dict
+from typing import Dict, Optional
 from pathlib import Path
 from contextlib import ExitStack, contextmanager
 import os
@@ -50,7 +50,24 @@ def open_for_write(path: os.PathLike, *,
 
         with_backup: bool = False,
         backup_format: str = BACKUP_FORMAT,
+        backup_for_fault: bool = True
     ):
+    '''
+    Open a file for write.
+
+    Parameters
+    ----------
+
+    `with_atomicwrite`: Indicate the file will be opened with atomic write (as known as write and replace).
+
+    `with_lockfile`: Indicate the file will be locked with a lockfile (like .pid).
+
+    `with_exclusive`: Indicate the file will be opened with exclusive lock.
+
+    `with_backup`: Indicate the file will be backup before write.
+
+    `backup_for_fault`: Indicate the backup file will be removed if the write operation completed success.
+    '''
 
     if with_atomicwrite and with_exclusive:
         raise ValueError('`with_atomicwrite` and `with_exclusive` cannot be set at the same time.')
@@ -59,6 +76,8 @@ def open_for_write(path: os.PathLike, *,
         raise FileExistsError(path)
 
     path_dict = create_path_dict(path, with_atomicwrite)
+
+    backup_path: Optional[Path] = None
 
     with ExitStack() as open_stack:
 
@@ -94,6 +113,11 @@ def open_for_write(path: os.PathLike, *,
             os.replace(atomicwrite_temp_path, path)
         else:
             os.rename(atomicwrite_temp_path, path)
+
+    if backup_for_fault and backup_path:
+        # remove backup file if it exists
+        backup_path.unlink(True)
+
 
 def try_rollback(path: os.PathLike, *,
         backup_format: str = BACKUP_FORMAT,
