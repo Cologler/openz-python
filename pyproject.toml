@@ -1,14 +1,17 @@
 [tool.poetry]
-name = "<new-python-package>"
+name = "openz"
 version = "0.0.0"
 description = ""
 authors = ["Cologler <skyoflw@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "<new-python-package>"}]
+packages = [{include = "openz"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+filelock = "^3.12.0"
+portalocker = "^2.7.0"
+nanoid = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.263"
