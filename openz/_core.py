@@ -84,7 +84,7 @@ def open_for_write(path: os.PathLike, *,
         parent = Path(path).parent
 
         if with_lockfile:
-            lockfile_path = lockfile_format.format_map(path_dict)
+            lockfile_path = parent / lockfile_format.format_map(path_dict)
             open_stack.enter_context(filelock.FileLock(lockfile_path))
 
         if with_backup and os.path.exists(path):
