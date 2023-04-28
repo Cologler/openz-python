@@ -1,5 +1,7 @@
 # openz
 
+[![Python Testing](https://github.com/Cologler/openz-python/actions/workflows/testing.yml/badge.svg)](https://github.com/Cologler/openz-python/actions/workflows/testing.yml)
+
 A strange file opener.
 
 ## Usage
