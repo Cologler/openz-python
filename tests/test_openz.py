@@ -6,6 +6,7 @@
 # ----------
 
 from pathlib import Path
+import os
 import tempfile
 import atexit
 
@@ -23,8 +24,10 @@ def _assert_lockfile(file_name: str, with_lockfile: bool):
     assert lockfile_path.is_file() == with_lockfile
 
 def _assert_no_lockfile(file_name: str):
-    lockfile_path = tmpdir_path / (file_name + '.lock')
-    assert not lockfile_path.is_file()
+    # lockfile wont remove if system is linux
+    if os.name == 'nt':
+        lockfile_path = tmpdir_path / (file_name + '.lock')
+        assert not lockfile_path.is_file()
 
 
 @pytest.mark.parametrize("text_mode", [True, False])
