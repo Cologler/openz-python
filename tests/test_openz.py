@@ -18,11 +18,11 @@ tmpdir = tempfile.TemporaryDirectory(prefix='openz-tests-')
 atexit.register(lambda: tmpdir.cleanup())
 tmpdir_path = Path(tmpdir.name)
 
-@pytest.mark.parametrize("backup", [True, False])
-@pytest.mark.parametrize("exclusive", [True, False])
-@pytest.mark.parametrize("lockfile", [True, False])
-@pytest.mark.parametrize("atomicwrite", [True, False])
 @pytest.mark.parametrize("text_mode", [True, False])
+@pytest.mark.parametrize("atomicwrite", [True, False])
+@pytest.mark.parametrize("lockfile", [True, False])
+@pytest.mark.parametrize("exclusive", [True, False])
+@pytest.mark.parametrize("backup", [True, False])
 def test_write(
         text_mode: bool,
         atomicwrite: bool,
@@ -32,9 +32,6 @@ def test_write(
     ):
 
     should_raises_error = atomicwrite and exclusive
-
-    if atomicwrite and exclusive:
-        return
 
     f = tmpdir_path / f'{nanoid.generate()}.txt'
 
@@ -66,11 +63,11 @@ def test_write(
         assert content() == data
 
 
-@pytest.mark.parametrize("backup", [True, False])
-@pytest.mark.parametrize("exclusive", [True, False])
-@pytest.mark.parametrize("lockfile", [True, False])
-@pytest.mark.parametrize("atomicwrite", [True, False])
 @pytest.mark.parametrize("text_mode", [True, False])
+@pytest.mark.parametrize("atomicwrite", [True, False])
+@pytest.mark.parametrize("lockfile", [True, False])
+@pytest.mark.parametrize("exclusive", [True, False])
+@pytest.mark.parametrize("backup", [True, False])
 def test_overwrite(
         text_mode: bool,
         atomicwrite: bool,
@@ -80,9 +77,6 @@ def test_overwrite(
     ):
 
     should_raises_error = atomicwrite and exclusive
-
-    if atomicwrite and exclusive:
-        return
 
     f = tmpdir_path / f'{nanoid.generate()}.txt'
 
@@ -113,10 +107,10 @@ def test_overwrite(
         assert content() == data
 
 
-@pytest.mark.parametrize("exclusive", [True, False])
-@pytest.mark.parametrize("lockfile", [True, False])
-@pytest.mark.parametrize("atomicwrite", [True, False])
 @pytest.mark.parametrize("text_mode", [True, False])
+@pytest.mark.parametrize("atomicwrite", [True, False])
+@pytest.mark.parametrize("lockfile", [True, False])
+@pytest.mark.parametrize("exclusive", [True, False])
 @pytest.mark.parametrize("backup_for_fault", [True, False])
 def test_backup(
         text_mode: bool,
