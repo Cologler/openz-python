@@ -36,6 +36,14 @@ def _atomic_open_for_write(dst: os.PathLike, parent: Path):
     os.replace(tmp, dst)
 
 @contextmanager
+def _lock_with_exclusive(fp):
+    portalocker.lock(fp, portalocker.LOCK_EX)
+    try:
+        yield
+    finally:
+        portalocker.unlock(fp)
+
+@contextmanager
 def open_for_write(path: os.PathLike, *,
         text_mode: bool = False,
         overwrite: bool = False,
@@ -104,7 +112,7 @@ def open_for_write(path: os.PathLike, *,
             fp = open_stack.enter_context(open(path, open_mode))
 
         if with_exclusive:
-            portalocker.lock(fp, portalocker.LOCK_EX)
+            open_stack.enter_context(_lock_with_exclusive(fp))
 
         yield fp
 
